@@ -5,6 +5,8 @@ const mongoose = require('mongoose');
 const Dishes = require('../models/dishes');
 
 const dishRouter = express.Router();
+const factorX = 'dish';
+const factorY = 'Dish';
 
 // Create, Read, Delete => dish
 dishRouter.route('/')
@@ -20,7 +22,7 @@ dishRouter.route('/')
     .post((req, res, next) => {
         Dishes.create(req.body)
             .then((dish) => {
-                console.log('Dish Created', dish);
+                console.log(`${factorY} Created`, dish);
                 res.statusCode = 200;
                 res.setHeader('Content-Type', 'application/json');
                 res.json(dish);
@@ -29,7 +31,7 @@ dishRouter.route('/')
     })
     .put((req, res, next) => {
         res.statusCode = 403;
-        res.end('PUT operation not supported on /dishes');
+        res.end(`PUT operation not supported on /${factorX}es`);
     })
     .delete((req, res, next) => {
         Dishes.deleteMany({})
@@ -42,7 +44,7 @@ dishRouter.route('/')
     })
 
 // Create, Read, Delete => dish by Id
-dishRouter.route('/:dishId')
+dishRouter.route(`/:${factorX}Id`)
     .get((req, res, next) => {
         Dishes.findById(req.params.dishId)
             .then((dish) => {
@@ -54,10 +56,10 @@ dishRouter.route('/:dishId')
     })
     .post((req, res, next) => {
         res.statusCode = 403;
-        res.end('POST operation not supported on /dishes/' + req.params.dishId);
+        res.end(`POST operation not supported on /${factorX}es/` + req.params.dishId);
     })
     .put((req, res, next) => {
-        Dishes.findByIdAndDelete(req.params.dishId, {
+        Dishes.findByIdAndUpdate(req.params.dishId, {
             $set: req.body
         }, { new: true })
             .then((dish) => {
@@ -77,7 +79,7 @@ dishRouter.route('/:dishId')
             .catch((err) => next(err))
     })
 
-dishRouter.route('/:dishId/comments')
+dishRouter.route(`/:${factorX}Id/comments`)
     .get((req, res, next) => {
         Dishes.findById(req.params.dishId)
             .then((dish) => {
@@ -86,7 +88,7 @@ dishRouter.route('/:dishId/comments')
                     res.setHeader('Content-Type', 'application/json');
                     res.json(dish.comments);
                 } else {
-                    err = new Error('Dish ' + req.params.dishId + ' not found');
+                    err = new Error(`${factorY} ` + req.params.dishId + ' not found');
                     err.statusCode = 404;
                     return next(err);
                 }
@@ -105,7 +107,7 @@ dishRouter.route('/:dishId/comments')
                             res.json(dish);
                         }, (err) => next(err))
                 } else {
-                    err = new Error('Dish ' + req.params.dishId + ' not found');
+                    err = new Error(`${factorX} ` + req.params.dishId + ' not found');
                     err.statusCode = 404;
                     return next(err);
                 }
@@ -114,7 +116,7 @@ dishRouter.route('/:dishId/comments')
     })
     .put((req, res, next) => {
         res.statusCode = 403;
-        res.end('PUT operation not supported on /dishes/' + req.params.dishId + '/comments');
+        res.end(`PUT operation not supported on /${factorX}es/` + req.params.dishId + '/comments');
     })
     .delete((req, res, next) => {
         Dishes.findById(req.params.dishId)
@@ -130,71 +132,12 @@ dishRouter.route('/:dishId/comments')
                             res.json(dish);
                         }, (err) => next(err))
                 } else {
-                    err = new Error('Dish ' + req.params.dishId + ' not found');
+                    err = new Error(`${factorY} ` + req.params.dishId + ' not found');
                     err.statusCode = 404;
                     return next(err);
                 }
             }, (err) => next(err))
             .catch((err) => next(err))
     })
-
-
-
-
-
-
-
-
-
-
-
-
-
-// dishRouter.use(bodyParser.json());
-
-// const factorX = 'dish';
-
-// dishRouter.route('/')
-//     .all((req, res, next) => {
-//         res.statusCode = 200;
-//         res.setHeader('Content-Type', 'text/plain');
-//         next();
-//     })
-//     .get((req, res, next) => {
-//         res.end(`Will send all the ${factorX}es to you!`);
-//     })
-//     .post((req, res, next) => {
-//         res.end(`Will add the ${factorX}: ` + req.body.name + ' with details: '
-//             + req.body.description);
-//     })
-//     .put((req, res, next) => {
-//         res.statusCode = 403;
-//         res.end(`PUT operation not supported on /${factorX}es`);
-//     })
-//     .delete((req, res, next) => {
-//         res.end(`Deleting all ${factorX}es`);
-//     })
-
-// dishRouter.route(`/:${factorX}Id`)
-//     .all((req, res, next) => {
-//         res.statusCode = 200;
-//         res.setHeader('Content-Type', 'text/plain');
-//         next();
-//     })
-//     .get((req, res, next) => {
-//         res.end(`Get the ${factorX} ` + req.params.dishId + '!')
-//     })
-//     .post((req, res, next) => {
-//         res.end('POST method not supported');
-//     })
-//     .put((req, res, next) => {
-//         res.statusCode = 403;
-//         res.end(`Will update the ${factorX}: ` + req.params.dishId
-//             + ' with name ' + req.body.name 
-//             + ', with details: ' + req.body.description);
-//     })
-//     .delete((req, res, next) => {
-//         res.end(`Deleted ${factorX} ` + req.params.dishId + '!');
-//     })
 
 module.exports = dishRouter;
